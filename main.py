@@ -28,9 +28,6 @@ try:
 except Exception as e:
     st.error(f"ヘッダー画像の読み込みに失敗しました: {str(e)}")
 
-# タイトル
-st.title("Duck Search App")
-
 # サイドバー
 with st.sidebar:
     st.header("検索設定")
