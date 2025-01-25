@@ -6,6 +6,10 @@ import pandas as pd
 # ページ設定
 st.set_page_config(page_title="Duck Search", layout="wide", page_icon="app.ico")
 
+# タイトルの直前に画像を表示
+st.markdown("<style>div.stImage {margin-bottom: 20px;}</style>", unsafe_allow_html=True)
+st.image("header_image.jpg", width=800)
+
 # タイトル
 st.title("Duck Search App")
 
