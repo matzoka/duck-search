@@ -29,7 +29,7 @@ with st.sidebar:
     )
     file_format = st.selectbox(
         "出力形式",
-        ["CSV", "Excel"]
+        ["Excel", "CSV"]
     )
     max_results = st.slider("最大結果数", 1, 50, 50)
 
