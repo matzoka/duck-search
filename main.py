@@ -44,6 +44,11 @@ with st.sidebar:
         ["テキスト", "画像", "ニュース"]
     )
     keyword = st.text_input("検索キーワード", "教師　なり方")
+    timelimit = st.selectbox(
+        "期間",
+        ["指定なし", "過去1日", "過去1週間", "過去1か月", "過去1年"],
+        index=0
+    )
     region = st.selectbox(
         "リージョン",
         ["jp-jp", "wt-wt"],
@@ -52,11 +57,6 @@ with st.sidebar:
     safesearch = st.selectbox(
         "セーフサーチ",
         ["off", "on", "moderate"],
-        index=0
-    )
-    timelimit = st.selectbox(
-        "期間",
-        ["指定なし", "過去1日", "過去1週間", "過去1か月", "過去1年"],
         index=0
     )
     file_format = st.selectbox(
