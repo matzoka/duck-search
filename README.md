@@ -44,5 +44,8 @@ Duck Searchは、DuckDuckGo Search APIを使用した検索ツールです。Str
 - CSV
 - Excel
 
+## 画像イメージ
+![Image](https://github.com/user-attachments/assets/f1828eed-a182-4656-99e5-b8207c58fb4a)
+
 ## ライセンス
 このプロジェクトはMITライセンスの下で公開されています。詳細はLICENSEファイルをご覧ください。
