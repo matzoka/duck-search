@@ -43,7 +43,17 @@ with st.sidebar:
         "検索タイプ",
         ["テキスト", "画像", "ニュース"]
     )
-    keyword = st.text_input("検索キーワード", "教師　なり方")
+    keyword = st.text_input(
+        "検索キーワード",
+        value="教師　なり方",
+        help="""
+        検索キーワードの指定方法:
+        - 除外ワード指定: キーワードの前に「-」を付ける
+          例: 東京 -大阪（「東京」を含み「大阪」を含まない）
+        - サイト除外: -site:ドメイン名
+          例: Python -site:stackoverflow.com
+        """
+    )
     timelimit = st.selectbox(
         "期間",
         ["指定なし", "過去1日", "過去1週間", "過去1か月", "過去1年"],
