@@ -2,6 +2,7 @@ import streamlit as st
 from duck_search import text_search, image_search, news_search
 import json
 import pandas as pd
+from datetime import datetime, timedelta
 
 # ページ設定
 st.set_page_config(page_title="Duck Search", layout="wide", page_icon="app.ico")
@@ -62,9 +63,26 @@ with st.sidebar:
     )
     timelimit = st.selectbox(
         "期間",
-        ["指定なし", "過去1日", "過去1週間", "過去1か月", "過去1年"],
-        index=0
+        ["指定なし", "過去1日", "過去1週間", "過去1か月", "過去1年", "カスタム期間"],
+        index=0,
+        help="カスタム期間を選択すると、開始日と終了日を指定できます。"
     )
+
+    # カスタム期間の日付選択
+    custom_date_range = None
+    if timelimit == "カスタム期間":
+        col1, col2 = st.columns(2)
+        with col1:
+            start_date = st.date_input("開始日", datetime.now() - timedelta(days=7))
+        with col2:
+            end_date = st.date_input("終了日", datetime.now())
+
+        if start_date and end_date:
+            if start_date <= end_date:
+                custom_date_range = f"{start_date}..{end_date}"
+            else:
+                st.error("開始日は終了日より前の日付を選択してください。")
+
     region = st.selectbox(
         "リージョン",
         ["jp-jp", "wt-wt"],
@@ -101,6 +119,9 @@ timelimit_map = {
     "過去1年": "y"
 }
 
+# カスタム期間の場合は日付範囲を使用
+final_timelimit = custom_date_range if timelimit == "カスタム期間" else timelimit_map.get(timelimit)
+
 # 検索実行
 if st.button("検索"):
     st.write(f"### {search_type}検索結果: {keyword}")
@@ -111,7 +132,7 @@ if st.button("検索"):
                 keyword=keyword,
                 region=region,
                 safesearch=safesearch,
-                timelimit=timelimit_map[timelimit],
+                timelimit=final_timelimit,
                 max_results=max_results
             )
         elif search_type == "画像":
@@ -119,7 +140,7 @@ if st.button("検索"):
                 keyword=keyword,
                 region=region,
                 safesearch=safesearch,
-                timelimit=timelimit_map[timelimit],
+                timelimit=final_timelimit,
                 max_results=max_results
             )
         elif search_type == "ニュース":
@@ -127,7 +148,7 @@ if st.button("検索"):
                 keyword=keyword,
                 region=region,
                 safesearch=safesearch,
-                timelimit=timelimit_map[timelimit],
+                timelimit=final_timelimit,
                 max_results=max_results
             )
 
