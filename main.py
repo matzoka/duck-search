@@ -123,12 +123,14 @@ if st.button("検索"):
             for i, result in enumerate(results):
                 with cols[i % 2]:
                     st.image(result['image'], caption=result['title'])
-                    st.write(f"[ソース]({result['url']})")
+                    url = result['url']
+                    st.write(f"[{url}]({url})")
         else:
             for result in results:
                 with st.expander(result['title']):
                     st.write(result['body'])
-                    st.write(f"[リンク]({result['href']})" if 'href' in result else f"[リンク]({result['url']})")
+                    url = result.get('href', result.get('url', ''))
+                    st.write(f"[{url}]({url})")
 
         # ダウンロードボタン
         if file_format == "CSV":
