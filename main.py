@@ -22,9 +22,17 @@ st.markdown("""
             font-weight: bold;
             font-family: sans-serif;
         }
+        @media (prefers-color-scheme: dark) {
+            .title-container {
+                background-color: #262626;
+            }
+            .title-text {
+                color: #ffffff;
+            }
+        }
     </style>
     <div class="title-container">
-        <div class="title-text">🦆 Duck Search 💖</div>
+        <div class="title-text">🦆 Duck Search</div>
     </div>
     """, unsafe_allow_html=True)
 
