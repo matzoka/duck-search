@@ -6,27 +6,27 @@ import pandas as pd
 # ページ設定
 st.set_page_config(page_title="Duck Search", layout="wide", page_icon="app.ico")
 
-# タイトルの直前に画像を表示
+# タイトルのスタイルとデザイン
 st.markdown("""
     <style>
-        div.stImage {
+        .title-container {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
             margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
         }
-        [data-testid="stHeader"] {
-            background-color: rgba(0,0,0,0);
+        .title-text {
+            color: #333333;
+            font-size: 2.5em;
+            font-weight: bold;
+            font-family: sans-serif;
         }
     </style>
+    <div class="title-container">
+        <div class="title-text">🦆 Duck Search 💖</div>
+    </div>
     """, unsafe_allow_html=True)
-
-try:
-    st.image(
-        "https://placehold.co/600x100/f5f5f5/333333?text=Duck+Search",
-        use_container_width=False
-    )
-except Exception as e:
-    st.error(f"ヘッダー画像の読み込みに失敗しました: {str(e)}")
 
 # サイドバー
 with st.sidebar:
