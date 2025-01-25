@@ -47,5 +47,7 @@ Duck Searchは、DuckDuckGo Search APIを使用した検索ツールです。Str
 ## 画像イメージ
 ![Image](https://github.com/user-attachments/assets/f1828eed-a182-4656-99e5-b8207c58fb4a)
 
+![Image](https://github.com/user-attachments/assets/e844d8b6-b8fb-4e4d-be1e-94448a6afa8a)
+
 ## ライセンス
 このプロジェクトはMITライセンスの下で公開されています。詳細はLICENSEファイルをご覧ください。
