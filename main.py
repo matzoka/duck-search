@@ -68,12 +68,23 @@ with st.sidebar:
     region = st.selectbox(
         "リージョン",
         ["jp-jp", "wt-wt"],
-        index=0
+        index=0,
+        help="""
+        検索対象の地域設定:
+        - jp-jp: 日本からの検索結果を優先（日本語コンテンツが中心）
+        - wt-wt: 全世界からの検索結果（地域を限定しない）
+        """
     )
     safesearch = st.selectbox(
         "セーフサーチ",
         ["off", "on", "moderate"],
-        index=0
+        index=0,
+        help="""
+        検索結果のフィルタリング設定:
+        - off: フィルタリングなし（すべての検索結果を表示）
+        - on: 厳格なフィルタリング（成人向けコンテンツを除外）
+        - moderate: 中程度のフィルタリング（過度な成人向けコンテンツのみ除外）
+        """
     )
     file_format = st.selectbox(
         "出力形式",
