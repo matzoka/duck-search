@@ -9,7 +9,11 @@ st.set_page_config(page_title="Duck Search", layout="wide", page_icon="app.ico")
 # タイトルの直前に画像を表示
 st.markdown("""
     <style>
-        div.stImage {margin-bottom: 20px;}
+        div.stImage {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
         [data-testid="stHeader"] {
             background-color: rgba(0,0,0,0);
         }
@@ -17,7 +21,10 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 try:
-    st.image("https://placehold.co/800x200/yellow/black?text=Duck+Search", use_container_width=True)
+    st.image(
+        "https://placehold.co/600x100/f5f5f5/333333?text=Duck+Search",
+        use_container_width=False
+    )
 except Exception as e:
     st.error(f"ヘッダー画像の読み込みに失敗しました: {str(e)}")
 
