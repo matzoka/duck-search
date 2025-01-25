@@ -54,11 +54,25 @@ with st.sidebar:
         ["off", "on", "moderate"],
         index=0
     )
+    timelimit = st.selectbox(
+        "期間",
+        ["指定なし", "過去1日", "過去1週間", "過去1か月", "過去1年"],
+        index=0
+    )
     file_format = st.selectbox(
         "出力形式",
         ["Excel", "CSV"]
     )
     max_results = st.slider("最大結果数", 1, 50, 50)
+
+# 期間の設定を変換
+timelimit_map = {
+    "指定なし": None,
+    "過去1日": "d",
+    "過去1週間": "w",
+    "過去1か月": "m",
+    "過去1年": "y"
+}
 
 # 検索実行
 if st.button("検索"):
@@ -70,6 +84,7 @@ if st.button("検索"):
                 keyword=keyword,
                 region=region,
                 safesearch=safesearch,
+                timelimit=timelimit_map[timelimit],
                 max_results=max_results
             )
         elif search_type == "画像":
@@ -77,6 +92,7 @@ if st.button("検索"):
                 keyword=keyword,
                 region=region,
                 safesearch=safesearch,
+                timelimit=timelimit_map[timelimit],
                 max_results=max_results
             )
         elif search_type == "ニュース":
@@ -84,6 +100,7 @@ if st.button("検索"):
                 keyword=keyword,
                 region=region,
                 safesearch=safesearch,
+                timelimit=timelimit_map[timelimit],
                 max_results=max_results
             )
 
