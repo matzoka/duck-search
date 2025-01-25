@@ -4,7 +4,7 @@ import json
 import pandas as pd
 
 # ページ設定
-st.set_page_config(page_title="Duck Search", layout="wide")
+st.set_page_config(page_title="Duck Search", layout="wide", page_icon="app.ico")
 
 # タイトル
 st.title("Duck Search App")
