@@ -10,6 +10,11 @@ Duck Searchは、DuckDuckGo Search APIを使用した検索ツールです。Str
 - AND検索（複数キーワード）
 - NG検索（特定キーワード除外）
 - 期間指定検索
+- ダークモード対応
+
+## 環境要件
+- Python 3.8以上
+- Windows/macOS/Linux
 
 ## インストール方法
 1. リポジトリをクローン:
@@ -34,20 +39,33 @@ Duck Searchは、DuckDuckGo Search APIを使用した検索ツールです。Str
 
 ## 検索オプション
 - 検索タイプ: テキスト、画像、ニュースから選択
-- リージョン: 検索対象地域を指定
+- リージョン: 検索対象地域を指定（jp-jp: 日本、wt-wt: グローバル）
 - セーフサーチ: 検索結果のフィルタリングレベルを設定
+- 期間指定: 以下の期間から選択
+  - 指定なし
+  - 過去1日
+  - 過去1週間
+  - 過去1か月
+  - 過去1年
 - 最大結果数: 1〜50件の範囲で指定
 - 出力形式: CSVまたはExcelを選択
 
+## 主な依存パッケージ
+- streamlit==1.29.0以上
+- duckduckgo-search==4.5.0以上
+- pandas==2.1.0以上
+
 ## 出力形式
 検索結果は以下の形式でダウンロード可能:
-- CSV
-- Excel
+- CSV (UTF-8 with BOM)
+- Excel (.xlsx)
 
-## 画像イメージ
-![Image](https://github.com/user-attachments/assets/f1828eed-a182-4656-99e5-b8207c58fb4a)
-
-![Image](https://github.com/user-attachments/assets/e844d8b6-b8fb-4e4d-be1e-94448a6afa8a)
+## 特徴
+- レスポンシブなWebインターフェース
+- システムのダークモード設定に自動対応
+- 検索結果のインタラクティブな表示
+- 複数の検索オプションによる柔軟な検索
+- 検索結果の簡単なエクスポート機能
 
 ## ライセンス
 このプロジェクトはMITライセンスの下で公開されています。詳細はLICENSEファイルをご覧ください。
