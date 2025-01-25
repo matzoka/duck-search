@@ -2,13 +2,19 @@ import streamlit as st
 from duck_search import text_search, image_search, news_search
 import json
 import pandas as pd
+from pathlib import Path
 
 # ページ設定
 st.set_page_config(page_title="Duck Search", layout="wide", page_icon="app.ico")
 
 # タイトルの直前に画像を表示
 st.markdown("<style>div.stImage {margin-bottom: 20px;}</style>", unsafe_allow_html=True)
-st.image("header_image.jpg", width=800)
+header_image = Path("header_image.jpg")
+if header_image.exists():
+    try:
+        st.image(str(header_image), use_container_width=True)
+    except Exception as e:
+        st.error(f"ヘッダー画像の読み込みに失敗しました: {str(e)}")
 
 # タイトル
 st.title("Duck Search App")
