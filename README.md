@@ -1,4 +1,4 @@
-# Duck Search プロジェクト
+# DuckDuckGo 統合検索ツール
 
 ## 概要
 Duck Searchは、DuckDuckGo Search APIを使用した検索ツールです。Streamlitを使用しており、直感的なWebインターフェースを提供します。
