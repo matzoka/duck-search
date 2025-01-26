@@ -59,14 +59,14 @@ def get_video_image_url(result):
 
 # 検索結果を表示する関数
 def display_results(df, search_type):
-    if search_type in ["画像", "ビデオ"]:
+    if search_type in ["🖼️画像", "🎥ビデオ"]:
         cols = st.columns(2)
         for i, row in df.iterrows():
             with cols[i % 2]:
                 st.write(f"### {row['タイトル']}")
 
                 # 画像URLとソースURLのデバッグ表示
-                if search_type == "ビデオ":
+                if search_type == "🎥ビデオ":
                     with st.expander("デバッグ情報"):
                         st.write(f"画像URL: {row['画像URL']}")
                         st.write(f"動画URL: {row['ソースURL']}")
@@ -80,7 +80,7 @@ def display_results(df, search_type):
                         st.write(f"Error: {str(e)}")
 
                 # ビデオ情報の表示
-                if search_type == "ビデオ":
+                if search_type == "🎥ビデオ":
                     if pd.notna(row['時間']) and row['時間'].strip():
                         st.write(f"再生時間: {row['時間']}")
                     if pd.notna(row['ソースURL']) and row['ソースURL'].strip():
@@ -92,7 +92,15 @@ def display_results(df, search_type):
                     st.write(row['内容'])
                 elif 'body' in row:
                     st.write(row['body'])
-                url = row['URL']
+
+                # 検索タイプに応じてURLカラムを選択
+                if 'URL' in row:
+                    url = row['URL']
+                elif 'ソースURL' in row:
+                    url = row['ソースURL']
+                else:
+                    url = ''
+
                 st.write(f"[{url}]({url})")
 
 # サイドバー
