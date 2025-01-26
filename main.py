@@ -1,5 +1,5 @@
 import streamlit as st
-from duck_search import text_search, image_search, news_search
+from duck_search import text_search, image_search, news_search, video_search
 import json
 import pandas as pd
 from datetime import datetime, timedelta
@@ -38,15 +38,53 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
+def is_valid_url(url):
+    """URLが有効かどうかをチェック"""
+    if not isinstance(url, str):
+        return False
+    url = url.strip()
+    return url.startswith(('http://', 'https://'))
+
+def get_video_image_url(result):
+    """ビデオ検索結果から最適な画像URLを取得"""
+    images = result.get('images', {})
+    if not images:
+        return ''
+
+    # 優先順位: large -> medium -> small -> motion
+    for size in ['large', 'medium', 'small', 'motion']:
+        if url := images.get(size):
+            return url
+    return ''
+
 # 検索結果を表示する関数
 def display_results(df, search_type):
-    if search_type == "画像":
+    if search_type in ["画像", "ビデオ"]:
         cols = st.columns(2)
-        for i, (_, row) in enumerate(df.iterrows()):
+        for i, row in df.iterrows():
             with cols[i % 2]:
-                st.image(row['画像URL'], caption=row['タイトル'])
-                url = row['ソースURL']
-                st.write(f"[{url}]({url})")
+                st.write(f"### {row['タイトル']}")
+
+                # 画像URLとソースURLのデバッグ表示
+                if search_type == "ビデオ":
+                    with st.expander("デバッグ情報"):
+                        st.write(f"画像URL: {row['画像URL']}")
+                        st.write(f"動画URL: {row['ソースURL']}")
+
+                # 画像の表示試行
+                if pd.notna(row['画像URL']) and row['画像URL'].strip():
+                    try:
+                        st.image(row['画像URL'])
+                    except Exception as e:
+                        st.warning(f"サムネイル画像を表示できません")
+                        st.write(f"Error: {str(e)}")
+
+                # ビデオ情報の表示
+                if search_type == "ビデオ":
+                    if pd.notna(row['時間']) and row['時間'].strip():
+                        st.write(f"再生時間: {row['時間']}")
+                    if pd.notna(row['ソースURL']) and row['ソースURL'].strip():
+                        st.write(f"[動画を見る]({row['ソースURL']})")
     else:
         for _, row in df.iterrows():
             with st.expander(row['タイトル']):
@@ -59,12 +97,13 @@ with st.sidebar:
     st.header("検索設定")
     search_type = st.selectbox(
         "検索タイプ",
-        ["テキスト", "画像", "ニュース"],
+        ["テキスト", "画像", "ニュース", "ビデオ"],
         help="""
         検索タイプの説明:
         - テキスト: 一般的なWeb検索。Webページやブログ記事などを検索します。
         - 画像: 画像専用の検索。画像とその説明、ソースURLが表示されます。
         - ニュース: ニュース記事に特化した検索。最新のニュース記事が表示されます。
+        - ビデオ: 動画専用の検索。動画のタイトル、サムネイル、再生時間などが表示されます。
         """
     )
     keyword = st.text_input(
@@ -167,6 +206,18 @@ if st.button("検索"):
                 timelimit=final_timelimit,
                 max_results=max_results
             )
+        elif search_type == "ビデオ":
+            results = video_search(
+                keyword=keyword,
+                region=region,
+                safesearch=safesearch,
+                timelimit=final_timelimit,
+                max_results=max_results
+            )
+            # デバッグ情報の出力
+            if results:
+                with st.expander("検索結果の詳細（最初の結果）"):
+                    st.json(results[0])
         else:  # ニュース
             results = news_search(
                 keyword=keyword,
@@ -177,10 +228,21 @@ if st.button("検索"):
             )
 
         # データ準備
-        if search_type == "画像":
-            data = [["タイトル", "画像URL", "ソースURL"]]
-            for result in results:
-                data.append([result['title'], result['image'], result['url']])
+        if search_type in ["画像", "ビデオ"]:
+            if search_type == "ビデオ":
+                data = [["タイトル", "画像URL", "ソースURL", "時間"]]
+                for result in results:
+                    # 必要な情報を抽出
+                    title = result.get('title', '')
+                    image_url = get_video_image_url(result)
+                    video_url = result.get('content', '')
+                    duration = result.get('duration', 'N/A')
+
+                    data.append([title, image_url, video_url, duration])
+            else:  # 画像検索の場合
+                data = [["タイトル", "画像URL", "ソースURL"]]
+                for result in results:
+                    data.append([result['title'], result['image'], result['url']])
         else:
             data = [["タイトル", "内容", "URL"]]
             for result in results:
@@ -195,7 +257,7 @@ if st.button("検索"):
 
     except Exception as e:
         st.error(f"検索中にエラーが発生しました: {str(e)}")
-        
+        st.write("エラー詳細:", str(e.__class__.__name__))
 
 # 結果の表示
 if st.session_state.search_results is not None:

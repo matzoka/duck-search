@@ -12,6 +12,20 @@ def text_search(keyword, region='jp-jp', safesearch='off', timelimit=None, max_r
         ))
         return results
 
+def video_search(keyword, region='jp-jp', safesearch='off', timelimit=None, max_results=4):
+    with DDGS() as ddgs:
+        results = list(ddgs.videos(
+            keywords=keyword,
+            region=region,
+            safesearch=safesearch,
+            timelimit=timelimit,
+            max_results=max_results
+        ))
+        # デバッグ用に結果の構造を確認
+        if results:
+            print("Video search result structure:")
+            print(json.dumps(results[0], indent=2, ensure_ascii=False))
+        return results
 def and_search(keyword1, keyword2, region='jp-jp', safesearch='off', timelimit=None, max_results=4):
     with DDGS() as ddgs:
         results = list(ddgs.text(
@@ -67,6 +81,17 @@ def news_search(keyword, region='jp-jp', safesearch='off', timelimit=None, max_r
         ))
         return results
 
+def video_search(keyword, region='jp-jp', safesearch='off', timelimit=None, max_results=4):
+    with DDGS() as ddgs:
+        results = list(ddgs.videos(
+            keywords=keyword,
+            region=region,
+            safesearch=safesearch,
+            timelimit=timelimit,
+            max_results=max_results
+        ))
+        return results
+
 def print_results(results):
     for result in results:
         print(json.dumps(result, indent=2, ensure_ascii=False))
@@ -91,6 +116,10 @@ if __name__ == '__main__':
 
     print('\n=== 画像検索 ===')
     results = image_search('東京')
+    print_results(results)
+
+    print('\n=== ビデオ検索 ===')
+    results = video_search('東京')
     print_results(results)
 
     print('\n=== ニュース検索 ===')
