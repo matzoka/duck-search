@@ -199,9 +199,6 @@ if st.button("検索"):
 # 結果の表示
 if st.session_state.search_results is not None:
     with main_container:
-        st.write(f"### {st.session_state.current_search_type}検索結果")
-
-        # 結果内検索のUI
         st.write("#### 結果内検索")
         col1, col2 = st.columns([4, 1])
         with col1:
@@ -235,6 +232,8 @@ if st.session_state.search_results is not None:
 
             # 結果表示
             if len(filtered_df) > 0:
+                st.write("---")
+                st.write(f"### {st.session_state.current_search_type}検索結果")
                 st.write(f"検索結果: {len(filtered_df)}件")
                 display_results(filtered_df, st.session_state.current_search_type)
 
@@ -264,6 +263,7 @@ if st.session_state.search_results is not None:
                                 os.remove("temp.xlsx")
             else:
                 st.warning("検索条件に一致する結果が見つかりませんでした。")
+                st.write("---")
 
         except Exception as e:
             st.error(f"結果内検索中にエラーが発生しました: {str(e)}")
