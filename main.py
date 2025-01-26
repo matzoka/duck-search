@@ -196,6 +196,17 @@ if st.button("検索"):
     except Exception as e:
         st.error(f"検索中にエラーが発生しました: {str(e)}")
 
+st.markdown("""
+<style>
+header.stAppHeader {
+    background-color: transparent;
+}
+section.stMain .block-container {
+    padding-top: 0rem;
+    z-index: 1;
+}
+</style>""", unsafe_allow_html=True)
+
 # 結果の表示
 if st.session_state.search_results is not None:
     with main_container:
