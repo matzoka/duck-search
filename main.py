@@ -88,7 +88,10 @@ def display_results(df, search_type):
     else:
         for _, row in df.iterrows():
             with st.expander(row['タイトル']):
-                st.write(row['内容'])
+                if '内容' in row:
+                    st.write(row['内容'])
+                elif 'body' in row:
+                    st.write(row['body'])
                 url = row['URL']
                 st.write(f"[{url}]({url})")
 
