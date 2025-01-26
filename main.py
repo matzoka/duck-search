@@ -97,7 +97,7 @@ with st.sidebar:
     st.header("検索設定")
     search_type = st.selectbox(
         "検索タイプ",
-        ["テキスト", "画像", "ニュース", "ビデオ"],
+        ["📝テキスト", "🖼️画像", "📰ニュース", "🎥ビデオ"],
         help="""
         検索タイプの説明:
         - テキスト: 一般的なWeb検索。Webページやブログ記事などを検索します。
@@ -190,7 +190,7 @@ if 'current_search_type' not in st.session_state:
 # 検索実行
 if st.button("検索"):
     try:
-        if search_type == "テキスト":
+        if search_type == "📝テキスト":
             results = text_search(
                 keyword=keyword,
                 region=region,
@@ -198,7 +198,7 @@ if st.button("検索"):
                 timelimit=final_timelimit,
                 max_results=max_results
             )
-        elif search_type == "画像":
+        elif search_type == "🖼️画像":
             results = image_search(
                 keyword=keyword,
                 region=region,
@@ -206,7 +206,7 @@ if st.button("検索"):
                 timelimit=final_timelimit,
                 max_results=max_results
             )
-        elif search_type == "ビデオ":
+        elif search_type == "🎥ビデオ":
             results = video_search(
                 keyword=keyword,
                 region=region,
@@ -218,7 +218,7 @@ if st.button("検索"):
             if results:
                 with st.expander("検索結果の詳細（最初の結果）"):
                     st.json(results[0])
-        else:  # ニュース
+        elif search_type == "📰ニュース":
             results = news_search(
                 keyword=keyword,
                 region=region,
@@ -228,8 +228,8 @@ if st.button("検索"):
             )
 
         # データ準備
-        if search_type in ["画像", "ビデオ"]:
-            if search_type == "ビデオ":
+        if search_type in ["🖼️画像", "🎥ビデオ"]:
+            if search_type == "🎥ビデオ":
                 data = [["タイトル", "画像URL", "ソースURL", "時間"]]
                 for result in results:
                     # 必要な情報を抽出
