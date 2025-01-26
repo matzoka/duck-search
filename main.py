@@ -203,70 +203,60 @@ if st.session_state.search_results is not None:
         st.write("#### 結果内検索")
         col1, col2 = st.columns([4, 1])
         with col1:
-            filter_keyword = st.text_input(
-                "検索キーワード（スペース区切りでAND検索）",
-                key="filter"
-            )
+            filter_keyword = st.text_input("検索キーワード（スペース区切りでAND検索）", key="filter")
         with col2:
             case_sensitive = st.checkbox("大文字/小文字を区別", key="case")
 
-        try:
-            df = st.session_state.search_results
-            filtered_df = df
+        # フィルタリング処理
+        df = st.session_state.search_results
+        filtered_df = df
 
-            if filter_keyword:
-                filter_keywords = filter_keyword.split()
+        if filter_keyword:
+            filter_keywords = filter_keyword.split()
+            df_to_search = df.copy()
 
-                if not case_sensitive:
-                    df_lower = df.copy()
-                    for col in df.columns:
-                        df_lower[col] = df_lower[col].astype(str).str.lower()
-                    filter_keywords = [k.lower() for k in filter_keywords]
-                    df_to_search = df_lower
-                else:
-                    df_to_search = df
+            if not case_sensitive:
+                for col in df.columns:
+                    df_to_search[col] = df_to_search[col].astype(str).str.lower()
+                filter_keywords = [k.lower() for k in filter_keywords]
 
-                mask = pd.Series([True] * len(df))
-                for k in filter_keywords:
-                    keyword_mask = pd.Series([False] * len(df))
-                    for col in df.columns:
-                        keyword_mask |= df_to_search[col].astype(str).str.contains(k, na=False)
-                    mask &= keyword_mask
-                filtered_df = df[mask]
+            mask = pd.Series([True] * len(df))
+            for k in filter_keywords:
+                keyword_mask = pd.Series([False] * len(df))
+                for col in df.columns:
+                    keyword_mask |= df_to_search[col].astype(str).str.contains(k, na=False)
+                mask &= keyword_mask
+            filtered_df = df[mask]
 
-            # 結果表示
-            if len(filtered_df) > 0:
-                st.write("---")
-                st.write(f"### {st.session_state.current_search_type}検索結果")
-                st.write(f"検索結果: {len(filtered_df)}件")
-                display_results(filtered_df, st.session_state.current_search_type)
+        # 結果表示
+        st.write("---")
+        st.write(f"### {st.session_state.current_search_type}検索結果")
+        if len(filtered_df) > 0:
+            st.write(f"検索結果: {len(filtered_df)}件")
+            display_results(filtered_df, st.session_state.current_search_type)
 
-                # ダウンロードセクション
-                st.write("---")
-                st.write("#### 検索結果のダウンロード")
-                if file_format == "CSV":
-                    csv = filtered_df.to_csv(index=False, encoding='utf-8-sig')
-                    st.download_button(
-                        label="検索結果をCSVでダウンロード",
-                        data=csv,
-                        file_name=f"{keyword}_{st.session_state.current_search_type}_results.csv",
-                        mime='text/csv'
-                    )
-                else:
-                    filtered_df.to_excel("temp.xlsx", index=False)
-                    try:
-                        with open("temp.xlsx", "rb") as f:
-                            st.download_button(
-                                label="検索結果をExcelでダウンロード",
-                                data=f,
-                                file_name=f"{keyword}_{st.session_state.current_search_type}_results.xlsx"
-                            )
-                    finally:
-                        # 一時ファイルの削除
-                        if os.path.exists("temp.xlsx"):
-                            os.remove("temp.xlsx")
+            # ダウンロードセクション
+            st.write("---")
+            st.write("#### 検索結果のダウンロード")
+            if file_format == "CSV":
+                csv = filtered_df.to_csv(index=False, encoding='utf-8-sig')
+                st.download_button(
+                    label="検索結果をCSVでダウンロード",
+                    data=csv,
+                    file_name=f"{keyword}_{st.session_state.current_search_type}_results.csv",
+                    mime='text/csv'
+                )
             else:
-                st.warning("検索条件に一致する結果が見つかりませんでした。")
-
-        except Exception as e:
-            st.error(f"結果内検索中にエラーが発生しました: {str(e)}")
+                filtered_df.to_excel("temp.xlsx", index=False)
+                try:
+                    with open("temp.xlsx", "rb") as f:
+                        st.download_button(
+                            label="検索結果をExcelでダウンロード",
+                            data=f,
+                            file_name=f"{keyword}_{st.session_state.current_search_type}_results.xlsx"
+                        )
+                finally:
+                    if os.path.exists("temp.xlsx"):
+                        os.remove("temp.xlsx")
+        else:
+            st.warning("検索条件に一致する結果が見つかりませんでした。")
