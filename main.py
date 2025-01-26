@@ -3,6 +3,7 @@ from duck_search import text_search, image_search, news_search
 import json
 import pandas as pd
 from datetime import datetime, timedelta
+import os
 
 # ページ設定
 st.set_page_config(page_title="Duck Search", layout="wide", page_icon="app.ico")
@@ -36,6 +37,22 @@ st.markdown("""
         <div class="title-text">🦆 Duck Search</div>
     </div>
     """, unsafe_allow_html=True)
+
+# 検索結果を表示する関数
+def display_results(df, search_type):
+    if search_type == "画像":
+        cols = st.columns(2)
+        for i, (_, row) in enumerate(df.iterrows()):
+            with cols[i % 2]:
+                st.image(row['画像URL'], caption=row['タイトル'])
+                url = row['ソースURL']
+                st.write(f"[{url}]({url})")
+    else:
+        for _, row in df.iterrows():
+            with st.expander(row['タイトル']):
+                st.write(row['内容'])
+                url = row['URL']
+                st.write(f"[{url}]({url})")
 
 # サイドバー
 with st.sidebar:
@@ -122,10 +139,17 @@ timelimit_map = {
 # カスタム期間の場合は日付範囲を使用
 final_timelimit = custom_date_range if timelimit == "カスタム期間" else timelimit_map.get(timelimit)
 
+# メインコンテナの作成
+main_container = st.container()
+
+# セッション状態の初期化
+if 'search_results' not in st.session_state:
+    st.session_state.search_results = None
+if 'current_search_type' not in st.session_state:
+    st.session_state.current_search_type = None
+
 # 検索実行
 if st.button("検索"):
-    st.write(f"### {search_type}検索結果: {keyword}")
-
     try:
         if search_type == "テキスト":
             results = text_search(
@@ -143,7 +167,7 @@ if st.button("検索"):
                 timelimit=final_timelimit,
                 max_results=max_results
             )
-        elif search_type == "ニュース":
+        else:  # ニュース
             results = news_search(
                 keyword=keyword,
                 region=region,
@@ -160,41 +184,86 @@ if st.button("検索"):
         else:
             data = [["タイトル", "内容", "URL"]]
             for result in results:
-                data.append([result['title'], result['body'],
-                               result.get('href', result.get('url', ''))])
+                data.append([
+                    result['title'],
+                    result['body'],
+                    result.get('href', result.get('url', ''))
+                ])
 
-        df = pd.DataFrame(data[1:], columns=data[0])
-
-        # 結果表示
-        if search_type == "画像":
-            cols = st.columns(2)
-            for i, result in enumerate(results):
-                with cols[i % 2]:
-                    st.image(result['image'], caption=result['title'])
-                    url = result['url']
-                    st.write(f"[{url}]({url})")
-        else:
-            for result in results:
-                with st.expander(result['title']):
-                    st.write(result['body'])
-                    url = result.get('href', result.get('url', ''))
-                    st.write(f"[{url}]({url})")
-
-        # ダウンロードボタン
-        if file_format == "CSV":
-            file = f"{keyword}_{search_type}_results.csv"
-            csv = df.to_csv(index=False, encoding='utf-8-sig')
-            st.download_button(
-                label="CSVとしてダウンロード",
-                data=csv,
-                file_name=file,
-                mime='text/csv',
-            )
-        else:
-            file = f"{keyword}_{search_type}_results.xlsx"
-            df.to_excel(file, index=False)
-            with open(file, "rb") as f:
-                st.download_button("Excelとしてダウンロード", f, file_name=file)
+        st.session_state.search_results = pd.DataFrame(data[1:], columns=data[0])
+        st.session_state.current_search_type = search_type
 
     except Exception as e:
         st.error(f"検索中にエラーが発生しました: {str(e)}")
+
+# 結果の表示
+if st.session_state.search_results is not None:
+    with main_container:
+        st.write(f"### {st.session_state.current_search_type}検索結果")
+
+        # 結果内検索のUI
+        st.write("#### 結果内検索")
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            filter_keyword = st.text_input("検索キーワード（スペース区切りでAND検索）", key="filter")
+        with col2:
+            case_sensitive = st.checkbox("大文字/小文字を区別", key="case")
+
+        try:
+            df = st.session_state.search_results
+            filtered_df = df
+
+            if filter_keyword:
+                filter_keywords = filter_keyword.split()
+
+                if not case_sensitive:
+                    df_lower = df.copy()
+                    for col in df.columns:
+                        df_lower[col] = df_lower[col].astype(str).str.lower()
+                    filter_keywords = [k.lower() for k in filter_keywords]
+                    df_to_search = df_lower
+                else:
+                    df_to_search = df
+
+                mask = pd.Series([True] * len(df))
+                for k in filter_keywords:
+                    keyword_mask = pd.Series([False] * len(df))
+                    for col in df.columns:
+                        keyword_mask |= df_to_search[col].astype(str).str.contains(k, na=False)
+                    mask &= keyword_mask
+                filtered_df = df[mask]
+
+            # 結果表示
+            if len(filtered_df) > 0:
+                st.write(f"検索結果: {len(filtered_df)}件")
+                display_results(filtered_df, st.session_state.current_search_type)
+
+                # ダウンロードボタン用のコンテナ
+                download_container = st.container()
+                with download_container:
+                    col1, col2 = st.columns(2)
+                    if file_format == "CSV":
+                        with col1:
+                            csv = filtered_df.to_csv(index=False, encoding='utf-8-sig')
+                            st.download_button(
+                                label="CSVとしてダウンロード",
+                                data=csv,
+                                file_name=f"{keyword}_{st.session_state.current_search_type}_results.csv",
+                                mime='text/csv'
+                            )
+                    else:
+                        with col2:
+                            filtered_df.to_excel("temp.xlsx", index=False)
+                            with open("temp.xlsx", "rb") as f:
+                                st.download_button(
+                                    label="Excelとしてダウンロード",
+                                    data=f,
+                                    file_name=f"{keyword}_{st.session_state.current_search_type}_results.xlsx"
+                                )
+                            if os.path.exists("temp.xlsx"):
+                                os.remove("temp.xlsx")
+            else:
+                st.warning("検索条件に一致する結果が見つかりませんでした。")
+
+        except Exception as e:
+            st.error(f"結果内検索中にエラーが発生しました: {str(e)}")
