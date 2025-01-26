@@ -39,6 +39,9 @@ Duck Searchは、DuckDuckGo Search APIを使用した検索ツールです。Str
    ```
 3. ブラウザで表示されるインターフェースを使用して検索を実行
 
+## 使用イメージ
+![実行画面](https://github.com/user-attachments/assets/928564bd-575c-4855-803f-1056e79c750c)
+
 ## 検索オプション
 ### 検索タイプ
 - 📝テキスト: 一般的なWeb検索。Webページやブログ記事などを検索
@@ -123,4 +126,3 @@ Duck Searchは、DuckDuckGo Search APIを使用した検索ツールです。Str
   - 🎥ビデオ検索
 
 ## ライセンス
-このプロジェクトはMITライセンスの下で公開されています。詳細はLICENSEファイルをご覧ください。
