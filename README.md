@@ -1,7 +1,7 @@
 # DuckDuckGo 統合検索ツール
 
 ## 概要
-Duck Searchは、DuckDuckGo Search APIを使用した検索ツールです。Streamlitを使用しており、直感的なWebインターフェースを提供します。
+DuckDuckGo 統合検索ツールは、DuckDuckGo Search APIを活用した多機能な検索プラットフォームです。Streamlitベースの直感的なWebインターフェースを通じて、テキスト、画像、ニュース、ビデオなど、様々な形式のコンテンツを効率的に検索できます。
 
 ## 主な機能
 - テキスト検索

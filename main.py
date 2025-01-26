@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import os
 
 # ページ設定
-st.set_page_config(page_title="Duck Search", layout="wide", page_icon="app.ico")
+st.set_page_config(page_title="DuckDuckGo 統合検索ツール", layout="wide", page_icon="app.ico")
 
 # タイトルのスタイルとデザイン
 st.markdown("""
@@ -34,7 +34,7 @@ st.markdown("""
         }
     </style>
     <div class="title-container">
-        <div class="title-text">🦆 Duck Search</div>
+        <div class="title-text">🔍 DuckDuckGo 統合検索ツール</div>
     </div>
     """, unsafe_allow_html=True)
 
