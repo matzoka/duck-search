@@ -199,10 +199,14 @@ if st.button("検索"):
 # 結果の表示
 if st.session_state.search_results is not None:
     with main_container:
+        # 結果内検索のUI
         st.write("#### 結果内検索")
         col1, col2 = st.columns([4, 1])
         with col1:
-            filter_keyword = st.text_input("検索キーワード（スペース区切りでAND検索）", key="filter")
+            filter_keyword = st.text_input(
+                "検索キーワード（スペース区切りでAND検索）",
+                key="filter"
+            )
         with col2:
             case_sensitive = st.checkbox("大文字/小文字を区別", key="case")
 
@@ -237,38 +241,32 @@ if st.session_state.search_results is not None:
                 st.write(f"検索結果: {len(filtered_df)}件")
                 display_results(filtered_df, st.session_state.current_search_type)
 
-                # ダウンロードボタン用のコンテナ
-                download_container = st.container()
-                with download_container:
-                    st.write("---")
-                    st.write("#### 検索結果のダウンロード")
-                    if file_format == "CSV":
-                        csv = filtered_df.to_csv(index=False, encoding='utf-8-sig')
-                        st.download_button(
-                            label="検索結果をCSVでダウンロード",
-                            data=csv,
-                            file_name=f"{keyword}_{st.session_state.current_search_type}_results.csv",
-                            mime='text/csv'
-                        )
-                    else:
-                        filtered_df.to_excel("temp.xlsx", index=False)
-                        try:
-                            # Excelファイルの読み込みとダウンロードボタンの表示
-                            st.write("　") # スペースを追加してボタンの位置を調整
-                            with open("temp.xlsx", "rb") as f:
-                                st.download_button(
-                                    label="検索結果をExcelでダウンロード",
-                                    data=f,
-                                    file_name=f"{keyword}_{st.session_state.current_search_type}_results.xlsx"
-                                )
-                        finally:
-                            # 一時ファイルの削除
-                            if os.path.exists("temp.xlsx"):
-                                os.remove("temp.xlsx")
-
+                # ダウンロードセクション
+                st.write("---")
+                st.write("#### 検索結果のダウンロード")
+                if file_format == "CSV":
+                    csv = filtered_df.to_csv(index=False, encoding='utf-8-sig')
+                    st.download_button(
+                        label="検索結果をCSVでダウンロード",
+                        data=csv,
+                        file_name=f"{keyword}_{st.session_state.current_search_type}_results.csv",
+                        mime='text/csv'
+                    )
+                else:
+                    filtered_df.to_excel("temp.xlsx", index=False)
+                    try:
+                        with open("temp.xlsx", "rb") as f:
+                            st.download_button(
+                                label="検索結果をExcelでダウンロード",
+                                data=f,
+                                file_name=f"{keyword}_{st.session_state.current_search_type}_results.xlsx"
+                            )
+                    finally:
+                        # 一時ファイルの削除
+                        if os.path.exists("temp.xlsx"):
+                            os.remove("temp.xlsx")
             else:
                 st.warning("検索条件に一致する結果が見つかりませんでした。")
-                st.write("---")
 
         except Exception as e:
             st.error(f"結果内検索中にエラーが発生しました: {str(e)}")
